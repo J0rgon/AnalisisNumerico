@@ -1,0 +1,186 @@
+EXPORT BI(X)
+BEGIN
+    RETURN CAS.h(X);
+END;
+
+EXPORT BISECCION(a, b, tol, maxiter)
+BEGIN
+    LOCAL fa, fb, c, fc, iter;
+    LOCAL error;
+
+    fa := BI(a);
+    fb := BI(b);
+    error := 1000;
+    IF fa == 0 THEN
+        RETURN {a, 0};
+    ELSE
+        IF fb == 0 THEN
+            RETURN {b, 0};
+        END;
+    END;
+
+    IF fa * fb > 0 THEN
+        MSGBOX("Error: f(a) and f(b) must have opposite signs.");
+        RETURN "Invalid Interval";
+    END;
+
+    FOR iter FROM 1 TO maxiter DO
+        c := (a + b) / 2;
+        fc := BI(c);
+        error := ABS(((b-a)/2));  
+        IF error < tol THEN
+            RETURN {c, iter};
+        END;
+        
+        IF fa * fc < 0 THEN
+            b := c;
+            fb := fc;
+        ELSE
+            a := c;
+            fa := fc;
+        END;
+    END;
+
+    MSGBOX("Warning: Max iterations reached. Result may not be accurate.");
+    RETURN {c, maxiter};
+END;
+
+EXPORT BISECCION(a, b, tol)
+BEGIN
+    LOCAL fa, fb, c, fc, iter;
+    LOCAL maxiter;
+
+    maxiter := CEILING(LOG((b-a)/tol)/LOG(2));
+    fa := BI(a);
+    fb := BI(b);
+
+    IF fa == 0 THEN
+        RETURN {a, 0};
+    ELSE
+        IF fb == 0 THEN
+            RETURN {b, 0};
+        END;
+    END;
+
+    IF fa * fb > 0 THEN
+        MSGBOX("Error: f(a) and f(b) must have opposite signs.");
+        RETURN "Invalid Interval";
+    END;
+
+    FOR iter FROM 1 TO maxiter DO
+        c := (a + b) / 2;
+        fc := BI(c);
+
+        IF ABS(fc) < tol THEN
+            RETURN {c, iter};
+        END;
+
+        IF fa * fc < 0 THEN
+            b := c;
+            fb := fc;
+        ELSE
+            a := c;
+            fa := fc;
+        END;
+    END;
+
+    MSGBOX("Warning: Max iterations reached. Result may not be accurate.");
+    RETURN {c, maxiter};
+END;
+
+EXPORT BISECCIONR(a, b, tol)
+BEGIN
+
+  LOCAL fa, fb, c, fc, lastc, iter;
+  
+  fa := BI(a);
+  fb := BI(b);
+  c:= 0;
+
+  IF fa*fb > 0 THEN
+    RETURN "FA AND FB HAVE SAME SIGN";
+  END;
+
+  iter := 0;
+
+  REPEAT
+    iter := iter + 1;
+    lastc := c;
+    c := (b+a)/2;
+    fc := BI(c);
+
+    IF fa*fc < 0 THEN
+        b := c;
+        fb := fc;
+    END;
+
+    IF fb*fc < 0 THEN
+        a := c;
+        fa := fc;
+    END;
+    
+  UNTIL ABS(100*(c - lastc)/c) < tol;
+  RETURN {c, iter}; 
+
+END;
+
+EXPORT BISECCION_SPREAD(a, b, tol, maxiter)
+BEGIN
+    LOCAL fa, fb, c, fc, iter, error;
+
+    BISECCION.Cell(1, 1) := "Iter";
+    BISECCION.Cell(1, 2) := "a";
+    BISECCION.Cell(1, 3) := "b";
+    BISECCION.Cell(1, 4) := "c";
+    BISECCION.Cell(1, 5) := "f(a)";
+    BISECCION.Cell(1, 6) := "f(b)";
+    BISECCION.Cell(1, 7) := "f(c)";
+    BISECCION.Cell(1, 8) := "Error";
+
+    fa := BI(a);
+    fb := BI(b);
+
+    IF fa == 0 THEN
+        RETURN {a, 0};
+    ELSE
+        IF fb == 0 THEN
+            RETURN {b, 0};
+        END;
+    END;
+
+    IF fa * fb > 0 THEN
+        MSGBOX("Error: f(a) and f(b) must have opposite signs.");
+        RETURN "Invalid Interval";
+    END;
+
+    FOR iter FROM 1 TO maxiter DO
+        c := (a + b) / 2;
+        fc := BI(c);
+        error := ABS((b - a) / 2);
+
+        // Write values into spreadsheet (row = iter + 1, headers in row 1)
+        BISECCION.Cell(iter+1, 1) := iter;   // Iter
+        BISECCION.Cell(iter+1, 2) := a;      // a
+        BISECCION.Cell(iter+1, 3) := b;      // b
+        BISECCION.Cell(iter+1, 4) := c;      // c
+        BISECCION.Cell(iter+1, 5) := fa;     // f(a)
+        BISECCION.Cell(iter+1, 6) := fb;     // f(b)
+        BISECCION.Cell(iter+1, 7) := fc;     // f(c)
+        BISECCION.Cell(iter+1, 8) := error;  // Error
+
+        IF error < tol THEN
+            RETURN {c, iter};
+        END;
+
+        IF fa * fc < 0 THEN
+            b := c;
+            fb := fc;
+        ELSE
+            a := c;
+            fa := fc;
+        END;
+    END;
+
+    MSGBOX("Warning: Max iterations reached. Result may not be accurate.");
+    RETURN {c, maxiter};
+END;

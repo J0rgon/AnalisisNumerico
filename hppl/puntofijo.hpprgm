@@ -1,0 +1,71 @@
+EXPORT PF(X)
+BEGIN
+    RETURN CAS.h(X);
+END;
+
+EXPORT PUNTOFIJO(p0, tol, maxiter)
+BEGIN
+    LOCAL currentp, lastp, iter, err;
+    currentp := p0;
+    iter := 0;
+
+    REPEAT
+        lastp := currentp;
+        currentp := PF(lastp);
+
+        IF currentp == 0 THEN
+            err := 0;
+        ELSE
+            err := ABS(currentp - lastp);
+        END;
+        iter := iter + 1;
+    UNTIL err < tol OR iter >= maxiter;
+
+      PRINT("");
+  IF err < tol THEN
+    PRINT("Converged to x = " + STRING(currentp,6));
+  ELSE
+    PRINT("Did not converge.");
+  END;
+
+  RETURN {currentp, iter};
+END;
+
+EXPORT PUNTOFIJO_SPREAD(p0, tol, maxiter)
+BEGIN
+    LOCAL currentp, lastp, iter, err;
+
+    PUNTOFIJO.Cell(1, 1) := "Iter";
+    PUNTOFIJO.Cell(1, 2) := "x_n";
+    PUNTOFIJO.Cell(1, 3) := "x_n+1";
+    PUNTOFIJO.Cell(1, 4) := "Error";
+
+    currentp := p0;
+    iter := 0;
+
+    REPEAT
+        lastp := currentp;
+        currentp := PF(lastp);
+
+        IF currentp == 0 THEN
+            err := 0;
+        ELSE
+            err := ABS(currentp - lastp);
+        END;
+
+        // Log to spreadsheet (starting at row 2)
+        PUNTOFIJO.Cell(iter + 2, 1) := iter;       // Iter
+        PUNTOFIJO.Cell(iter + 2, 2) := lastp;      // x_n
+        PUNTOFIJO.Cell(iter + 2, 3) := currentp;   // x_n+1
+        PUNTOFIJO.Cell(iter + 2, 4) := err;        // Error
+
+        iter := iter + 1;
+    UNTIL err < tol OR iter >= maxiter;
+
+    IF err < tol THEN
+        RETURN {currentp, iter};
+    ELSE
+        MSGBOX("Did not converge within max iterations.");
+        RETURN {currentp, iter};
+    END;
+END;
