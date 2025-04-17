@@ -32,3 +32,5 @@ def ai(p0, epsilon):
         print("{:3} | {: .10f} | {: .10f} | {: .10f} | {: .10f} | {: e} ".format(itr_n,p0,p1,p2,pg,error))
         if(error < epsilon):
             break
+
+ai(1, math.pow(10, -3))

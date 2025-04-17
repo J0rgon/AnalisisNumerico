@@ -1,6 +1,6 @@
 EXPORT BI(X)
 BEGIN
-    RETURN CAS.h(X);
+    RETURN SIN(X)^2+1;
 END;
 
 EXPORT BISECCION(a, b, tol, maxiter)

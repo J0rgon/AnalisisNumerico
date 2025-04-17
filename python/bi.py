@@ -1,7 +1,7 @@
 import math
 
 def fx(x):
-    return (x+2)*(x+1)*x*(x-1)**3*(x-2)
+    return math.sin(x)**2 + 1
 
 def bi(a, b, tol, n_max=1000):
     fa = fx(a)

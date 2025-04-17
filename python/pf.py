@@ -15,3 +15,5 @@ def pf(pn, epsilon):
             break
         pn = g_pn
         itr_n = itr_n + 1
+
+pf(1, math.pow(10, -3))
