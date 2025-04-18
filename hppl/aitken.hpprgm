@@ -111,6 +111,6 @@ END;
 
 EXPORT FORMULA_AITKEN(A, B, C)
 BEGIN
-    RETURN A - ((B-A)^2)/(C - 2*B + A)
+    RETURN A - ((B-A)^2)/(C - 2*B + A);
 END;
 
